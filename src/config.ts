@@ -6,16 +6,9 @@
 /** Path the site is served under (its GitHub Pages project subpath). */
 export const BASE = "/vite-alpine-tailwind/";
 
-/** Absolute origin for canonical / social URLs. Update on deploy. */
-export const SITE_URL = `https://vzsoares.github.io${BASE}`;
-
-/** Site identity, used across `<head>` metadata and the UI. */
+/** Site identity, surfaced in the UI (nav brand, footer, home hero). */
 export const SITE = {
-    name: "Vite Alpine Tailwind",
     headline: "Vite + Alpine + Tailwind",
-    description:
-        "A lightweight client-side SPA starter combining Vite, Alpine.js and Tailwind CSS — UI as Web Components, routed with pinecone-router.",
-    keywords: "vite, alpine.js, tailwind css, web components, spa, template",
     author: "vzsoares",
     authorUrl: "https://github.com/vzsoares",
     repoUrl: "https://github.com/vzsoares/vite-alpine-tailwind",

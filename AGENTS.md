@@ -23,15 +23,14 @@ bun run check       # Biome lint + format (writes)
 bun run typecheck   # tsc --noEmit
 bun run test        # Vitest unit tests
 bun run build       # Vite build (emits dist/ + 404.html)
-bun run test:e2e    # Playwright vs. dev (first time: bunx playwright install chromium)
+bun run test:e2e    # Playwright: dev + production-build suites (first time: bunx playwright install chromium)
 ```
 
-For build / base-path / routing changes, also run the production-build e2e (it
-builds + previews under the Pages base path — this is what CI gates on):
-
-```bash
-bun run test:e2e:preview
-```
+`test:e2e` runs two projects from one `playwright.config.ts`: `dev` (`e2e/` vs.
+the dev server) and `preview` (`e2e-preview/` vs. the production build under the
+Pages base path — this catches base-path and 404.html SPA-fallback regressions,
+and is what CI gates on). Run a single suite with `playwright test
+--project=dev|preview`.
 
 For UI changes, also **look at the result** (`bun run dev`, or a Playwright
 screenshot) — several layout/timing bugs are only visible visually.

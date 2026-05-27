@@ -1,4 +1,4 @@
-import { getPost, type Post, posts } from "./content/posts";
+import { type Post, posts } from "./content/posts";
 
 /** Reactive state for the `counter` demo component. */
 export interface CounterState {
@@ -48,7 +48,7 @@ export function blogPost(): BlogPostState {
         next: undefined,
         load(this: BlogPostState, slug: string) {
             const index = posts.findIndex((p) => p.slug === slug);
-            this.post = getPost(slug);
+            this.post = index >= 0 ? posts[index] : undefined;
             this.prev = index > 0 ? posts[index - 1] : undefined;
             this.next = index >= 0 ? posts[index + 1] : undefined;
         },

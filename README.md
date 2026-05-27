@@ -69,8 +69,7 @@ bun run preview    # preview the production build
 | `bun run typecheck`        | Type-check with `tsc --noEmit`                |
 | `bun run test`             | Run unit tests once (Vitest)                  |
 | `bun run test:watch`       | Run unit tests in watch mode (Vitest)         |
-| `bun run test:e2e`         | End-to-end browser tests vs. dev (Playwright) |
-| `bun run test:e2e:preview` | E2E vs. the **production build** (preview)    |
+| `bun run test:e2e`         | E2E browser tests — dev **and** production-build suites (Playwright) |
 
 ## 🗂️ Project Structure
 

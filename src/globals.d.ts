@@ -5,14 +5,11 @@
  *   for devtools and for the router's `settings()` call.
  */
 
-/** Subset of pinecone-router v7 settings we configure (settings is a function). */
+/** The pinecone-router v7 settings we configure (settings is a function). */
 interface PineconeRouterSettings {
-    hash: boolean;
     basePath: string;
     targetID?: string;
-    handleClicks: boolean;
-    preload: boolean;
-    pushState: boolean;
+    hash: boolean;
 }
 
 interface PineconeRouterApi {

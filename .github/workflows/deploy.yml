@@ -41,10 +41,8 @@ jobs:
               run: bun run test
             - name: Install Playwright browsers
               run: bunx playwright install --with-deps chromium
-            - name: E2E tests
+            - name: E2E tests (dev + production build)
               run: bun run test:e2e
-            - name: E2E tests (production build)
-              run: bun run test:e2e:preview
             - name: Upload Playwright report
               if: ${{ !cancelled() }}
               uses: actions/upload-artifact@v7
