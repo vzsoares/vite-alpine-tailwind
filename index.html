@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vite Alpine Tailwind</title>
+        <meta
+            name="description"
+            content="A lightweight Vite + Alpine.js + Tailwind CSS SPA starter — Web Components + pinecone-router."
+        />
+
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="stylesheet" href="/src/styles.css" />
+        <script type="module" src="/src/app.ts"></script>
+    </head>
+    <body
+        x-data="{
+            darkMode: JSON.parse(localStorage.getItem('darkMode')) ??
+                window.matchMedia('(prefers-color-scheme: dark)').matches
+        }"
+        x-init="$watch('darkMode', (value) => localStorage.setItem('darkMode', value))"
+        :data-theme="darkMode ? 'dark' : 'light'"
+        :class="darkMode ? 'dark bg-gray-900 text-white' : 'bg-white text-gray-900'"
+        class="m-0 flex min-h-screen flex-col p-0 font-sans transition-colors duration-300"
+        x-cloak
+    >
+        <!-- Persistent chrome (rendered once, never re-routed). -->
+        <app-nav></app-nav>
+
+        <!-- pinecone-router renders the matched route's template into here. -->
+        <main id="app" class="flex flex-1 flex-col"></main>
+
+        <app-footer></app-footer>
+
+        <!-- Route table. Authored without the base path (pinecone prepends the
+             configured basePath). Each route renders a page Web Component into
+             #app via the inline template + `.target.app` modifier. -->
+        <template x-route="/" x-template.target.app>
+            <page-home></page-home>
+        </template>
+        <template x-route="/about" x-template.target.app>
+            <page-about></page-about>
+        </template>
+        <template x-route="/blog" x-template.target.app>
+            <page-blog></page-blog>
+        </template>
+        <template x-route="/blog/:slug" x-template.target.app>
+            <page-post></page-post>
+        </template>
+        <!-- `x-handler="[]"` overrides pinecone's default notfound handler, which
+             otherwise logs a ReferenceError to the console on every unmatched
+             path. The <page-not-found> template still renders the 404 UI. -->
+        <template x-route="notfound" x-handler="[]" x-template.target.app>
+            <page-not-found></page-not-found>
+        </template>
+    </body>
+</html>
