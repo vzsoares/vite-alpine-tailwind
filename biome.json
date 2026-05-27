@@ -40,5 +40,17 @@
                 "organizeImports": "on"
             }
         }
-    }
+    },
+    "overrides": [
+        {
+            "includes": ["src/pages/**/*.html"],
+            "linter": {
+                "rules": {
+                    "a11y": {
+                        "useAnchorContent": "off"
+                    }
+                }
+            }
+        }
+    ]
 }

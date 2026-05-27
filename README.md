@@ -9,10 +9,11 @@
 
 🔗 **[Live demo](https://vzsoares.github.io/vite-alpine-tailwind/)**
 
-A **lightweight client-side SPA** starter: it authors its UI as **native Web
-Components** 🧩, wires reactivity with **Alpine.js** 🗻, styles with **Tailwind
-CSS v4** 🎨, and routes entirely in the browser with **pinecone-router** 🧭 —
-shipping a tiny bundle and deploying free to **GitHub Pages**. 🚀
+A **lightweight client-side SPA** starter: it authors its UI as **plain HTML
+pages** 🧩, wires reactivity with **Alpine.js** 🗻, styles with **Tailwind CSS
+v4** 🎨, and routes entirely in the browser with **pinecone-router** 🧭 (which
+loads each page's HTML into the shell) — shipping a tiny bundle and deploying free
+to **GitHub Pages**. 🚀
 
 > Looking for the batteries-included, **prerendered** sibling (type-safe JSX →
 > static HTML, Markdown blog, full-text search, SEO/social cards)? That's
@@ -25,15 +26,15 @@ shipping a tiny bundle and deploying free to **GitHub Pages**. 🚀
 
 - ⚡️ **Vite** — lightning-fast dev server and builds (Rolldown / oxc)
 - 🗻 **Alpine.js** — the reactivity behind every component
-- 🧩 **Web Components** — UI authored as native custom elements (Light DOM)
+- 🧩 **Plain HTML pages** — each route is an HTML file the router loads (Light DOM)
 - 🧭 **pinecone-router** — client-side routing (history mode) for Alpine
 - 🎨 **Tailwind CSS v4** — utility-first styling (+ `typography` prose + **daisyUI**)
 - 📦 **TypeScript** · 🍞 **Bun** · 🧹 **Biome** · 🧪 **Vitest** · 🎭 **Playwright**
 
 **What you get**
 
-- 🧩 **Web-Component authoring** — `<app-nav>`, `<app-footer>`, `<theme-toggle>`,
-  `<counter-card>`, plus one `<page-*>` element per route
+- 🧩 **Plain-HTML pages** — inline nav/footer chrome in the shell + one
+  `src/pages/*.html` file per route, loaded by the router
 - 🧭 **SPA routing** — `/`, `/about`, `/blog`, `/blog/:slug`, and a `notfound` route
 - 📝 **Static blog** — posts as data, rendered client-side (index + per-post pages)
 - 🌙 **Dark mode** — `data-theme` + `.dark`, remembers your choice
@@ -76,74 +77,71 @@ bun run preview    # preview the production build
 ```
 /
 ├── public/         # Static assets copied as-is (favicon.ico, og.png, logos/)
-├── index.html      # SPA shell: <body> dark-mode state, #app target, route table
+├── index.html      # SPA shell: <body> dark-mode state, inline nav/footer, #app, route table
 ├── src/
-│   ├── app.ts      # Bootstrap: define elements → Alpine.plugin → data → settings → start
+│   ├── app.ts      # Bootstrap: Alpine.plugin → data → store → settings → start
 │   ├── alpine.ts   # Typed Alpine.data() factories: counter(), blogPost()
-│   ├── config.ts   # Site identity, base path, nav + footer links
+│   ├── config.ts   # Deploy base path (BASE)
 │   ├── globals.d.ts# Ambient types (__APP_VERSION__, window.Alpine/PineconeRouter)
 │   ├── styles.css  # Tailwind + typography + daisyUI + brand tokens + dark + x-cloak
 │   ├── content/posts.ts # Blog content (HTML strings) + getPost()
-│   ├── components/ # Reusable Web Components
-│   │   ├── base.ts        # LightElement (render-once, Light DOM) + asset()
-│   │   ├── index.ts       # registerComponents() — customElements.define(...)
-│   │   └── app-nav.ts · app-footer.ts · theme-toggle.ts · counter-card.ts
-│   └── pages/      # One Web Component per route (<page-home>, …)
-│       └── home.ts · about.ts · blog.ts · post.ts · not-found.ts
+│   └── pages/      # One plain HTML file per route, loaded by the router
+│       └── home.html · about.html · blog.html · post.html · not-found.html
 ├── e2e/            # Playwright e2e (vs. dev): routing, counter, dark-mode, blog…
 ├── e2e-preview/    # E2E vs. the production build (base path, 404.html fallback)
-├── vite.config.ts  # base by command/isPreview, Tailwind, SPA 404 plugin, Vitest
-└── docs/web-components.md  # The Web-Component + Alpine + router pattern & gotchas
+├── vite.config.ts  # base, Tailwind, page-templates plugin, SPA 404 plugin, Vitest
+└── docs/pages-and-routing.md  # The plain-HTML page + Alpine + router pattern & gotchas
 ```
 
-## 🧩 Web Components
+## 🧩 Pages
 
-The UI is authored as **native custom elements** that render into their **own
-children (Light DOM)** — see `src/components/base.ts` (`LightElement`). Light DOM
-is deliberate: it lets the global Tailwind/daisyUI stylesheet apply, and lets
-Alpine discover the `x-*` directives inside (Alpine does not cross Shadow DOM).
+Each route's UI is a **plain HTML file** in `src/pages/` — Alpine directives, no
+build step, no framework runtime beyond Alpine. pinecone-router loads the file
+into `<main id="app">`; Alpine's MutationObserver then initializes its directives.
+Light DOM throughout, so the global Tailwind/daisyUI stylesheet applies.
 
-```ts
-// src/components/counter-card.ts
-export class CounterCard extends LightElement {
-    protected render(): string {
-        const start = Number(this.getAttribute("start") ?? 0) || 0;
-        return `<div x-data="counter(${start})">
-            <p x-text="count"></p>
-            <button @click="increment()">+</button>
-        </div>`;
-    }
-}
+```html
+<!-- src/pages/home.html (excerpt) -->
+<div x-data="counter(0)">
+    <p x-text="count"></p>
+    <button @click="increment()">+</button>
+</div>
 ```
 
-Register new elements in `src/components/index.ts`. Reactive logic lives in typed
-`Alpine.data()` factories (`src/alpine.ts`) so it stays unit-testable. See
-[docs/web-components.md](docs/web-components.md) for the full pattern + gotchas.
+Reactive logic lives in typed `Alpine.data()` factories (`src/alpine.ts`) so it
+stays unit-testable; pages reference them by `x-data`. Data the HTML needs at
+runtime (it can't import TS) is exposed on `Alpine.store("app", …)` — `version`,
+`base`, `posts` — read via `$store.app`. See
+[docs/pages-and-routing.md](docs/pages-and-routing.md) for the full pattern + gotchas.
 
 ## 🧭 Routing
 
 Routing is **client-side**, declared in `index.html` as a table of
 [pinecone-router](https://pinecone-router.github.io/router/) `<template x-route>`
-elements that render a page component into `<main id="app">`:
+rows. Each loads a page's HTML file into `<main id="app">`:
 
 ```html
-<template x-route="/about" x-template.target.app><page-about></page-about></template>
-<template x-route="/blog/:slug" x-template.target.app><page-post></page-post></template>
+<template x-route="/about" x-template.target.app="/pages/about.html"></template>
+<template x-route="/blog/:slug" x-template.target.app="/pages/post.html"></template>
 ```
 
-- **Add a route** with two edits: create `src/pages/<name>.ts` (a `<page-*>`
-  element), register it in `components/index.ts`, and add a `<template x-route>`.
+The files live in `src/pages/*.html`; a small Vite plugin (`page-templates` in
+`vite.config.ts`) serves them at `/pages/*.html` in dev and copies them to
+`dist/pages/` on build.
+
+- **Add a route** with two edits: create `src/pages/<name>.html`, and add a
+  `<template x-route="/<name>" x-template.target.app="/pages/<name>.html">` row.
 - Navigation is plain `<a href="/about">` — pinecone intercepts clicks and
   prepends the configured `basePath`. Add `native` to opt a link out (externals).
 - **Dynamic params** (`/blog/:slug`) are read via the `$params` magic. Because
   pinecone does not re-render the template when only the param changes (e.g.
-  prev/next post), `<page-post>` uses `x-effect="load($params.slug)"` to re-resolve.
+  prev/next post), `post.html` uses `x-effect="load($params.slug)"` to re-resolve.
 
 ## 🌙 Dark mode & 🎨 UI (daisyUI)
 
 Dark mode is Alpine state on `<body>` (persisted to `localStorage`), toggled by
-`<theme-toggle>`; daisyUI themes follow via `data-theme`. Rebrand the whole site
-by editing the three `brand-*` tokens in `src/styles.css`. See [DESIGN.md](DESIGN.md).
+the nav's theme button; daisyUI themes follow via `data-theme`. Rebrand the whole
+site by editing the three `brand-*` tokens in `src/styles.css`. See [DESIGN.md](DESIGN.md).
 
 ## 🚀 Deploy
 
@@ -155,7 +153,7 @@ Update `BASE` in `src/config.ts` (it sets Vite's `base` and the router `basePath
 
 ## 📚 Docs
 
-- 🧩 **[docs/web-components.md](docs/web-components.md)** — the component + router pattern
+- 🧩 **[docs/pages-and-routing.md](docs/pages-and-routing.md)** — the page + router pattern
 - 🎨 **[DESIGN.md](DESIGN.md)** — design tokens & visual system
 - 🤖 **[AGENTS.md](AGENTS.md)** — guide for AI coding agents (verify, tools, gotchas)
 

@@ -5,10 +5,11 @@ Guidance for AI coding agents working in this repo. Humans: see `README.md`.
 ## What this is
 
 A **lightweight client-side SPA** built on Vite + Alpine.js + Tailwind. The UI is
-authored as **native Web Components (custom elements, Light DOM)**, made reactive
-with Alpine, and routed in the browser with **pinecone-router**. Nothing is
-prerendered — the server ships one `index.html` shell. See `DESIGN.md` for the
-visual system and `docs/web-components.md` for the component pattern.
+authored as **plain HTML pages** (Light DOM), made reactive with Alpine, and
+routed in the browser with **pinecone-router**, which loads each route's HTML file
+into the shell. Nothing is prerendered — the server ships one `index.html` shell.
+See `DESIGN.md` for the visual system and `docs/pages-and-routing.md` for the page
++ routing pattern.
 
 > The prerendered/SSG sibling is **vite-alpine-tailwind-x** (JSX + static HTML +
 > blog/search/SEO). Don't bring that architecture here — this repo is deliberately
@@ -37,18 +38,24 @@ screenshot) — several layout/timing bugs are only visible visually.
 
 ## How the repo works
 
-- **Components are elements.** Reusable UI lives in `src/components/` as classes
-  extending `LightElement` (`src/components/base.ts`), which renders an HTML string
-  into the element's own children **once** in `connectedCallback`. Register every
-  element in `src/components/index.ts`.
-- **Pages are elements too.** One `<page-*>` element per route in `src/pages/`.
-- **Routes are a table.** `index.html` maps each route to a page element via
-  pinecone `<template x-route="…" x-template.target.app>`. **Add a route = add a
-  `src/pages/<name>.ts`, register it, add a `<template x-route>` row.**
+- **Pages are plain HTML.** Each route's UI is a plain HTML file in
+  `src/pages/*.html` (Alpine directives, no TypeScript). pinecone-router loads it
+  into `<main id="app">` via `x-template.target.app="/pages/<name>.html"`.
+- **The `page-templates` plugin** (`vite.config.ts`) bridges `src/` and the URL
+  pinecone fetches: it serves `src/pages/*.html` at `/pages/*.html` in dev and
+  emits them to `dist/pages/` on build.
+- **Persistent chrome is inline** in `index.html` — the nav (with the dark-mode
+  toggle) and the footer are plain HTML + Alpine, present in the shell.
+- **Routes are a table** in `index.html`. **Add a route = add `src/pages/<name>.html`
+  + a `<template x-route>` row.**
 - **Reactive logic is data factories.** `Alpine.data()` factories live in
-  `src/alpine.ts` (`counter`, `blogPost`) — plain, DOM-free, unit-tested.
-- **`src/config.ts` is the single source of truth** for identity, base path, and
-  links — imported by both the build and the components.
+  `src/alpine.ts` (`counter`, `blogPost`) — plain, DOM-free, unit-tested; pages
+  reference them by `x-data`.
+- **Runtime data for pages goes through `Alpine.store("app", …)`** (`src/app.ts`):
+  `version`, `base` (asset URLs), `posts`. Plain HTML can't import TS, so pages
+  read these via `$store.app`.
+- **`src/config.ts`** holds the deploy base path (`BASE`), shared by the build
+  (`vite.config.ts`) and the router (`src/app.ts`).
 
 ## Tools
 
@@ -58,24 +65,31 @@ release-it (releases). Vite 8 is Rolldown/**oxc**-based. Runtime libs: `alpinejs
 
 ## Gotchas (learned the hard way)
 
-- **Light DOM only — never `attachShadow`.** Shadow roots hide `x-*` directives
-  from Alpine's DOM walk *and* block the global Tailwind/daisyUI stylesheet. All
-  components render into `this.innerHTML`.
-- **Render once; never `Alpine.initTree()` yourself.** Alpine's initial walk (for
-  elements present before `Alpine.start()`) or its MutationObserver (for elements
-  the router inserts) initializes inner `x-data` exactly once. Re-initializing
-  double-binds handlers. `LightElement` guards against double-render.
-- **In plain HTML strings, use the natural Alpine shorthands** — `@click`,
-  `:class`, `x-text`. (The `x-on:`/`x-bind:` longhand was only needed in the JSX
-  sibling.)
+- **Pages are plain HTML served by the `page-templates` plugin** — not bundled.
+  In dev its middleware must run BEFORE Vite's SPA fallback (added directly inside
+  `configureServer`, not the returned post-hook), or `/pages/x.html` would resolve
+  to `index.html`. On build it emits the files to `dist/pages/`.
+- **Don't call `Alpine.initTree()` yourself.** Alpine's initial walk inits the
+  inline chrome; its MutationObserver inits the HTML pinecone loads into `#app`. A
+  manual init double-binds handlers (e.g. a counter that increments twice/click).
+- **Pages can't import TS** — runtime values come from `$store.app` (`version`,
+  `base`, `posts`), set in `alpine:init` before `Alpine.start()`.
+- **Tailwind auto-scans `src/`**, so classes used only in `src/pages/*.html` are
+  generated — no `@source` needed (they live under `src`).
+- **Biome lints the page HTML.** Alpine-driven anchors (text via `x-text`) trip
+  `a11y/useAnchorContent`; it's turned off for `src/pages/**/*.html` via a
+  `biome.json` `overrides` entry.
+- **Use Alpine's natural shorthands** in the page HTML — `@click`, `:class`,
+  `x-text`, `x-show`, `x-html`.
 - **pinecone v7: `settings()` is a function, called in `alpine:init`** — NOT
-  options passed to `Alpine.plugin()`. Keys: `basePath`, `targetID` (capital ID),
-  `hash`, `handleClicks`, `pushState`. See `src/app.ts`.
+  options passed to `Alpine.plugin()`. We set `basePath`, `targetID` (capital ID),
+  `hash`. `basePath` is also auto-prepended to the `x-template` file URLs, so the
+  pages resolve under the Pages subpath. See `src/app.ts`.
 - **basePath must NOT have a trailing slash** (`import.meta.env.BASE_URL` does) or
   routes double up. We strip it: `.replace(/\/$/, "")`.
 - **Same-route param changes don't re-render the template.** For `/blog/:slug`
   prev/next navigation, read the param with `x-effect="load($params.slug)"`, not
-  once in `init()` (it would go stale). See `<page-post>` + `blogPost()`.
+  once in `init()` (it would go stale). See `src/pages/post.html` + `blogPost()`.
 - **The `notfound` route ships a default handler that `console.error`s.** We
   override it with `x-handler="[]"` on the notfound template so the console stays
   clean (the 404 UI still renders).

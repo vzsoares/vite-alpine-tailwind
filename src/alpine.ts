@@ -9,8 +9,8 @@ export interface CounterState {
 }
 
 /**
- * The typed `counter` Alpine.data component used by `<counter-card>`. Kept as a
- * plain factory (no DOM/Alpine deps) so it is trivially unit-testable.
+ * The typed `counter` Alpine.data component used by the home page's demo. Kept as
+ * a plain factory (no DOM/Alpine deps) so it is trivially unit-testable.
  */
 export function counter(start = 0): CounterState {
     return {
@@ -36,7 +36,8 @@ export interface BlogPostState {
 }
 
 /**
- * `blogPost` Alpine.data for `<page-post>`. Driven by `x-effect="load($params.slug)"`
+ * `blogPost` Alpine.data for the post page (`src/pages/post.html`). Driven by
+ * `x-effect="load($params.slug)"`
  * so it (re)resolves the post whenever the `:slug` route param changes — pinecone
  * does NOT re-render the template when navigating between two posts on the same
  * route (e.g. prev/next), so reading the slug once in `init()` would go stale.

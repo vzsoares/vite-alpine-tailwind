@@ -1,6 +1,6 @@
 /**
- * Blog content. Each entry is rendered client-side by the `<page-post>` Web
- * Component for the `/blog/:slug` route (see `blogPost()` in `src/alpine.ts`).
+ * Blog content. Each entry is rendered client-side by the post page
+ * (`src/pages/post.html`) for the `/blog/:slug` route (see `blogPost()` in `src/alpine.ts`).
  *
  * `body` is a trusted HTML string authored here (this template ships no Markdown
  * renderer) and is injected via Alpine's `x-html`, styled with

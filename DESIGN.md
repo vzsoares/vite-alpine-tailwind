@@ -76,7 +76,7 @@ and tight; the hero `h1` is `text-5xl`, page titles `text-4xl`, section titles
 
 Single-column, centered. Page sections are `py-16 px-8`; content is capped at
 `max-w-6xl` (grids) or `max-w-2xl` (prose/articles), centered with `mx-auto`. The
-persistent `<app-nav>` + `<main id="app">` + `<app-footer>` wrap each route; the
+persistent inline `<nav>` + `<main id="app">` + `<footer>` wrap each route; the
 body is a `min-h-screen` flex column so the footer sits at the bottom and the
 hero fills the first viewport.
 
