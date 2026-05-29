@@ -57,6 +57,52 @@ bun run preview    # preview the production build
 > First time running e2e tests? Install the browser once:
 > `bunx playwright install chromium`
 
+## 🛠️ Post-install checklist
+
+After clicking **"Use this template"** and cloning your new repo, run through these
+once before your first commit:
+
+**Identity**
+
+- [ ] **Version** — reset `"version"` in `package.json` to `"0.1.0"`
+- [ ] **Author** — update `"author"` in `package.json` to your name
+- [ ] **Project name & description** — update `"name"` and `"description"` in
+  `package.json`; update `<title>`, the three OG/Twitter title tags, and the two
+  description meta tags in `index.html`
+- [ ] **Nav brand** — replace `VAT` / `Template` in the `<nav>` in `index.html`
+
+**Base path (critical for GitHub Pages)**
+
+- [ ] **`src/config.ts`** — set `BASE` to `"/<your-repo-name>/"`
+- [ ] **`playwright.config.ts`** — set the local `BASE` constant to the same value
+  so e2e tests match the actual build paths
+
+**OpenGraph & social**
+
+- [ ] **`og:url`** — update to `https://<your-username>.github.io/<your-repo-name>/`
+- [ ] **`og:image` / `twitter:image`** — update both to
+  `https://<your-username>.github.io/<your-repo-name>/og.png`
+- [ ] **Social image** — replace `public/og.png` with your own 1200 × 630 image
+
+**Repository URLs**
+
+- [ ] **`package.json`** — update `"homepage"`, `"repository.url"`, and `"bugs.url"`
+  to point to your new repo
+- [ ] **`index.html` links** — update the GitHub nav link, the footer GitHub link,
+  and the "Created by" author credit in the `<footer>`
+- [ ] **`src/pages/home.html`** — update or remove the "View on GitHub" link that
+  points to the template repo
+
+**GitHub Pages**
+
+- [ ] **Enable Pages** — go to **Settings → Pages → Source** and select
+  **"GitHub Actions"** (the deploy workflow is already wired up)
+
+**Documentation**
+
+- [ ] **Rewrite this README** — replace the template docs with your project's own
+  description, features, and instructions
+
 ## 📜 Scripts
 
 | Command                    | Description                                   |
