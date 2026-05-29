@@ -17,8 +17,8 @@
             property="og:description"
             content="A lightweight client-side SPA starter combining Vite, Alpine.js, and Tailwind CSS v4."
         />
-        <meta property="og:url" content="https://vzsoares.github.io/vite-alpine-tailwind/" />
-        <meta property="og:image" content="https://vzsoares.github.io/vite-alpine-tailwind/og.png" />
+        <meta property="og:url" content="%SITE_URL%" />
+        <meta property="og:image" content="%SITE_URL%og.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
 
@@ -29,7 +29,7 @@
             name="twitter:description"
             content="A lightweight client-side SPA starter combining Vite, Alpine.js, and Tailwind CSS v4."
         />
-        <meta name="twitter:image" content="https://vzsoares.github.io/vite-alpine-tailwind/og.png" />
+        <meta name="twitter:image" content="%SITE_URL%og.png" />
 
         <link rel="icon" href="/favicon.ico" />
         <link rel="stylesheet" href="/src/styles.css" />
@@ -64,7 +64,7 @@
                 <a href="/" :class="path === '/' ? 'text-brand-1 font-semibold' : 'hover:text-brand-1 transition-colors'">Home</a>
                 <a href="/blog" :class="path.startsWith('/blog') ? 'text-brand-1 font-semibold' : 'hover:text-brand-1 transition-colors'">Blog</a>
                 <a href="/about" :class="path === '/about' ? 'text-brand-1 font-semibold' : 'hover:text-brand-1 transition-colors'">About</a>
-                <a href="https://github.com/vzsoares/vite-alpine-tailwind" target="_blank" rel="noopener" native class="transition-colors hover:text-gray-500">GitHub</a>
+                <a href="%REPO_URL%" target="_blank" rel="noopener" native class="transition-colors hover:text-gray-500">GitHub</a>
             </div>
 
             <button type="button" @click="darkMode = !darkMode" class="btn btn-ghost btn-circle" aria-label="Toggle dark mode">
@@ -84,14 +84,14 @@
             <div class="mx-auto flex max-w-6xl flex-col items-center justify-between md:flex-row">
                 <div class="mb-4 md:mb-0">
                     <span class="opacity-70">Created by </span>
-                    <a href="https://github.com/vzsoares" target="_blank" rel="noopener" native class="link link-hover font-medium">vzsoares</a>
+                    <a href="https://github.com/%AUTHOR%" target="_blank" rel="noopener" native class="link link-hover font-medium">%AUTHOR%</a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="https://vitejs.dev" target="_blank" rel="noopener" native class="link link-hover opacity-70 hover:opacity-100">Vite</a>
                     <a href="https://alpinejs.dev" target="_blank" rel="noopener" native class="link link-hover opacity-70 hover:opacity-100">Alpine.js</a>
                     <a href="https://tailwindcss.com" target="_blank" rel="noopener" native class="link link-hover opacity-70 hover:opacity-100">Tailwind</a>
                     <a href="https://pinecone-router.github.io/router/" target="_blank" rel="noopener" native class="link link-hover opacity-70 hover:opacity-100">Pinecone</a>
-                    <a href="https://github.com/vzsoares/vite-alpine-tailwind" target="_blank" rel="noopener" native class="link link-hover opacity-70 hover:opacity-100">GitHub</a>
+                    <a href="%REPO_URL%" target="_blank" rel="noopener" native class="link link-hover opacity-70 hover:opacity-100">GitHub</a>
                 </div>
             </div>
             <div class="mx-auto mt-6 max-w-6xl text-center text-sm opacity-60">

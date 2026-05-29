@@ -3,7 +3,7 @@ import { copyFileSync, existsSync, readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, type Plugin } from "vite";
-import { BASE } from "./src/config";
+import { AUTHOR, BASE, REPO_URL, SITE_URL } from "./src/config";
 
 const { version } = JSON.parse(
     readFileSync(resolve(process.cwd(), "package.json"), "utf-8"),
@@ -53,7 +53,7 @@ function pageTemplates(): Plugin {
                 const file = match && resolve(dir, match[1]);
                 if (!file || !existsSync(file)) return next();
                 res.setHeader("Content-Type", "text/html");
-                res.end(readFileSync(file, "utf-8"));
+                res.end(applyConfigVars(readFileSync(file, "utf-8")));
             });
         },
         generateBundle() {
@@ -62,9 +62,27 @@ function pageTemplates(): Plugin {
                 this.emitFile({
                     type: "asset",
                     fileName: `pages/${name}`,
-                    source: readFileSync(resolve(dir, name), "utf-8"),
+                    source: applyConfigVars(
+                        readFileSync(resolve(dir, name), "utf-8"),
+                    ),
                 });
             }
+        },
+    };
+}
+
+function applyConfigVars(html: string): string {
+    return html
+        .replaceAll("%SITE_URL%", SITE_URL)
+        .replaceAll("%REPO_URL%", REPO_URL)
+        .replaceAll("%AUTHOR%", AUTHOR);
+}
+
+function injectConfig(): Plugin {
+    return {
+        name: "inject-config",
+        transformIndexHtml(html) {
+            return applyConfigVars(html);
         },
     };
 }
@@ -77,7 +95,12 @@ export default defineConfig(({ command, isPreview }) => ({
     // SPA history-API fallback: serve index.html for unknown paths so client
     // routes (e.g. /about) resolve on a hard load / refresh in dev too.
     appType: "spa",
-    plugins: [tailwindcss(), pageTemplates(), ghPagesSpaFallback()],
+    plugins: [
+        tailwindcss(),
+        pageTemplates(),
+        ghPagesSpaFallback(),
+        injectConfig(),
+    ],
     define: {
         // App version, surfaced in the footer (see <app-footer>).
         __APP_VERSION__: JSON.stringify(version),

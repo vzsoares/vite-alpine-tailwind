@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { BASE } from "./src/config";
 
 // Two e2e suites, one config:
 // - "dev"     → tests in ./e2e run against the Vite dev server (port 5273).
@@ -10,7 +11,6 @@ import { defineConfig, devices } from "@playwright/test";
 // single suite with `playwright test --project=dev|preview`.
 const DEV_PORT = 5273;
 const PREVIEW_PORT = 5274;
-const BASE = "/vite-alpine-tailwind/";
 
 const devURL = `http://localhost:${DEV_PORT}`;
 const previewURL = `http://localhost:${PREVIEW_PORT}${BASE}`;

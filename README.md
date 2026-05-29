@@ -71,27 +71,17 @@ once before your first commit:
   description meta tags in `index.html`
 - [ ] **Nav brand** — replace `VAT` / `Template` in the `<nav>` in `index.html`
 
-**Base path (critical for GitHub Pages)**
+**Base path & URLs (critical for GitHub Pages)**
 
-- [ ] **`src/config.ts`** — set `BASE` to `"/<your-repo-name>/"`
-- [ ] **`playwright.config.ts`** — set the local `BASE` constant to the same value
-  so e2e tests match the actual build paths
-
-**OpenGraph & social**
-
-- [ ] **`og:url`** — update to `https://<your-username>.github.io/<your-repo-name>/`
-- [ ] **`og:image` / `twitter:image`** — update both to
-  `https://<your-username>.github.io/<your-repo-name>/og.png`
+- [ ] **`src/config.ts`** — set `BASE`, `SITE_URL`, `REPO_URL`, and `AUTHOR` —
+  all OG/Twitter meta tags, nav/footer links, and Playwright's preview suite
+  derive from these automatically
 - [ ] **Social image** — replace `public/og.png` with your own 1200 × 630 image
 
 **Repository URLs**
 
 - [ ] **`package.json`** — update `"homepage"`, `"repository.url"`, and `"bugs.url"`
   to point to your new repo
-- [ ] **`index.html` links** — update the GitHub nav link, the footer GitHub link,
-  and the "Created by" author credit in the `<footer>`
-- [ ] **`src/pages/home.html`** — update or remove the "View on GitHub" link that
-  points to the template repo
 
 **GitHub Pages**
 
@@ -127,7 +117,7 @@ once before your first commit:
 ├── src/
 │   ├── app.ts      # Bootstrap: Alpine.plugin → data → store → settings → start
 │   ├── alpine.ts   # Typed Alpine.data() factories: counter(), blogPost()
-│   ├── config.ts   # Deploy base path (BASE)
+│   ├── config.ts   # Deploy config: BASE (path) and SITE_URL (canonical URL)
 │   ├── globals.d.ts# Ambient types (__APP_VERSION__, window.Alpine/PineconeRouter)
 │   ├── styles.css  # Tailwind + typography + daisyUI + brand tokens + dark + x-cloak
 │   ├── content/posts.ts # Blog content (HTML strings) + getPost()
