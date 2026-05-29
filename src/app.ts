@@ -1,3 +1,4 @@
+import Persist from "@alpinejs/persist";
 import Alpine from "alpinejs";
 import PineconeRouter from "pinecone-router";
 import { blogPost, counter } from "./alpine";
@@ -6,6 +7,7 @@ import { posts } from "./content/posts";
 // Register the router plugin + typed Alpine.data components — all must run
 // before Alpine.start(). NOTE: pinecone-router v7 takes NO options here;
 // settings() is a separate function called in `alpine:init` below.
+Alpine.plugin(Persist);
 Alpine.plugin(PineconeRouter);
 Alpine.data("counter", counter);
 Alpine.data("blogPost", blogPost);
